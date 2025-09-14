@@ -6,40 +6,13 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CampaignTable } from "./campaign-table"
 import { CampaignDialog } from "./campaign-dialog"
+import { CampaignProgressDialog } from "./campaign-progress-dialog"
+import { CampaignJobsDialog } from "./campaign-jobs-dialog"
 import { Pagination } from "./pagination"
 import { Plus, Search } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useAppSelector } from "@/app/hooks"
-
-export interface Campaign {
-  id: number
-  name: string
-  description: string
-  minIntervalMinutes: number
-  maxIntervalMinutes: number
-  lastSent: string | null
-  createdAt: string
-  updatedAt: string
-  sessionId: number
-  groupId?: number
-  session?: {
-    id: number
-    sessionName: string
-    agentName: string
-    isActive: boolean
-  }
-  contacts?: Array<{
-    id: number
-    name: string
-    email: string
-    phone: string
-  }>
-  templates?: Array<{
-    id: number
-    name: string
-    message: string
-  }>
-}
+import type { Campaign } from "@/types/campaign"
 
 export interface PaginationInfo {
   currentPage: number
@@ -71,7 +44,10 @@ export default function CampaignsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [progressDialogOpen, setProgressDialogOpen] = useState(false)
+  const [jobsDialogOpen, setJobsDialogOpen] = useState(false)
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null)
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null)
   const { toast } = useToast()
 
   const fetchCampaigns = async (page = 1, limit = 10, searchTerm = "") => {
@@ -129,6 +105,16 @@ export default function CampaignsPage() {
     setDialogOpen(true)
   }
 
+  const handleViewProgress = (campaign: Campaign) => {
+    setSelectedCampaign(campaign)
+    setProgressDialogOpen(true)
+  }
+
+  const handleViewJobs = (campaign: Campaign) => {
+    setSelectedCampaign(campaign)
+    setJobsDialogOpen(true)
+  }
+
   const handleDeleteCampaign = async (campaignId: number) => {
     try {
       const response = await fetch(`http://localhost:3001/campaigns/${campaignId}`, {
@@ -174,7 +160,9 @@ export default function CampaignsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Campaign Management</CardTitle>
-          <CardDescription>Manage marketing campaigns and messaging</CardDescription>
+          <CardDescription>
+            Manage marketing campaigns with real-time progress tracking and job monitoring
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Search and Controls */}
@@ -204,6 +192,9 @@ export default function CampaignsPage() {
             loading={loading}
             onEdit={handleEditCampaign}
             onDelete={handleDeleteCampaign}
+            onRefresh={() => fetchCampaigns(pagination.currentPage, pagination.itemsPerPage, search)}
+            onViewProgress={handleViewProgress}
+            onViewJobs={handleViewJobs}
           />
 
           {/* Pagination */}
@@ -218,6 +209,16 @@ export default function CampaignsPage() {
         campaign={editingCampaign}
         onCampaignSaved={handleCampaignSaved}
       />
+
+      {/* Progress Dialog */}
+      <CampaignProgressDialog
+        open={progressDialogOpen}
+        onOpenChange={setProgressDialogOpen}
+        campaign={selectedCampaign}
+      />
+
+      {/* Jobs Dialog */}
+      <CampaignJobsDialog open={jobsDialogOpen} onOpenChange={setJobsDialogOpen} campaign={selectedCampaign} />
     </div>
   )
 }

@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { Search, X } from "lucide-react"
-import type { Campaign } from "./campaigns-page"
+import type { Campaign } from "@/types/campaign"
 import { useAppSelector } from "@/app/hooks"
 
 interface Session {
