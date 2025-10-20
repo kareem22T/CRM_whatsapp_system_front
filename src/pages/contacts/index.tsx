@@ -12,9 +12,11 @@ import { ContactDialog } from "./contact-dialog"
 import { ContactGroupSidebar } from "./contact-group-sidebar"
 import { ContactGroupDialog, type ContactGroup } from "./contact-group-dialog"
 import { Pagination } from "./pagination"
+import { VerificationDialog } from "./verification-dialog"
 import { Plus, Search, Users, Download, Upload } from "lucide-react"
 import { useAppSelector } from "@/app/hooks"
 import { toast, ToastContainer } from "react-toastify"
+import { RootState } from "@/app/store"
 
 export interface PaginationInfo {
   page: number
@@ -52,7 +54,7 @@ export default function ContactsPage() {
   })
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
-  const [companyFilter, setCompanyFilter] = useState("all") // Updated default value
+  const [companyFilter, setCompanyFilter] = useState("all")
 
   // State for contact groups
   const [contactGroups, setContactGroups] = useState<ContactGroup[]>([])
@@ -65,9 +67,14 @@ export default function ContactsPage() {
   const [editingContact, setEditingContact] = useState<Contact | null>(null)
   const [editingGroup, setEditingGroup] = useState<ContactGroup | null>(null)
 
+  const [verificationDialogOpen, setVerificationDialogOpen] = useState(false)
+  const [verificationType, setVerificationType] = useState<"group" | "contact">("contact")
+  const [verificationTargetId, setVerificationTargetId] = useState<number>(0)
+  const [verificationTargetName, setVerificationTargetName] = useState<string>("")
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const token = useAppSelector((state) => state.auth.token)
+  const token = useAppSelector((state: RootState) => state.auth.token)
 
   // Fetch contacts
   const fetchContacts = async (page = 1, limit = 10, searchTerm = "", company = "", groupId: number | null = null) => {
@@ -81,7 +88,7 @@ export default function ContactsPage() {
         ...(groupId && { groupId: groupId.toString() }),
       })
 
-      const response = await fetch(`http://localhost:3001/contacts?${params}`, {
+      const response = await fetch(`http://67.211.221.109:3001/contacts?${params}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -105,7 +112,7 @@ export default function ContactsPage() {
   const fetchContactGroups = async () => {
     try {
       setGroupsLoading(true)
-      const response = await fetch("http://localhost:3001/contact-groups", {
+      const response = await fetch("http://67.211.221.109:3001/contact-groups", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -155,7 +162,7 @@ export default function ContactsPage() {
 
   const handleDeleteContact = async (contactId: number) => {
     try {
-      const response = await fetch(`http://localhost:3001/contacts/${contactId}`, {
+      const response = await fetch(`http://67.211.221.109:3001/contacts/${contactId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -179,6 +186,20 @@ export default function ContactsPage() {
     }
   }
 
+  const handleStartContactVerification = (contact: Contact) => {
+    setVerificationType("contact")
+    setVerificationTargetId(contact.id)
+    setVerificationTargetName(contact.name)
+    setVerificationDialogOpen(true)
+  }
+
+  const handleStartGroupVerification = (group: ContactGroup) => {
+    setVerificationType("group")
+    setVerificationTargetId(group.id)
+    setVerificationTargetName(group.name)
+    setVerificationDialogOpen(true)
+  }
+
   const handleContactSaved = () => {
     window.location.reload()
   }
@@ -195,7 +216,7 @@ export default function ContactsPage() {
 
   const handleDeleteGroup = async (groupId: number) => {
     try {
-      const response = await fetch(`http://localhost:3001/contact-groups/${groupId}`, {
+      const response = await fetch(`http://67.211.221.109:3001/contact-groups/${groupId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -231,7 +252,7 @@ export default function ContactsPage() {
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await fetch("http://localhost:3001/contacts/template", {
+      const response = await fetch("http://67.211.221.109:3001/contacts/template", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -261,7 +282,7 @@ export default function ContactsPage() {
       const formData = new FormData()
       formData.append("file", file)
 
-      const response = await fetch("http://localhost:3001/contacts/import-excel", {
+      const response = await fetch("http://67.211.221.109:3001/contacts/import-excel", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -325,6 +346,7 @@ export default function ContactsPage() {
             onAddGroup={handleAddGroup}
             onEditGroup={handleEditGroup}
             onDeleteGroup={handleDeleteGroup}
+            onStartGroupVerification={handleStartGroupVerification}
             loading={groupsLoading}
           />
         </div>
@@ -406,6 +428,7 @@ export default function ContactsPage() {
                 loading={loading}
                 onEdit={handleEditContact}
                 onDelete={handleDeleteContact}
+                onStartVerification={handleStartContactVerification}
               />
 
               {/* Pagination */}
@@ -430,6 +453,24 @@ export default function ContactsPage() {
         onOpenChange={setGroupDialogOpen}
         group={editingGroup}
         onGroupSaved={handleGroupSaved}
+      />
+
+      <VerificationDialog
+        open={verificationDialogOpen}
+        onOpenChange={setVerificationDialogOpen}
+        type={verificationType}
+        targetId={verificationTargetId}
+        targetName={verificationTargetName}
+        onVerificationStarted={() => {
+          // Refresh contacts to show updated verification status
+          fetchContacts(
+            pagination.page,
+            pagination.limit,
+            search,
+            companyFilter === "all" ? "" : companyFilter,
+            selectedGroupId,
+          )
+        }}
       />
     </div>
   )

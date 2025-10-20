@@ -7,8 +7,8 @@ import type {
   SendMessageResponse,
 } from "./types"
 
-const API_BASE_URL = "http://localhost:3002"
-const SESSIONS_API_URL = "http://localhost:3001"
+const API_BASE_URL = "http://67.211.221.109:3002"
+const SESSIONS_API_URL = "http://67.211.221.109:3001"
 
 export async function createSession(agentName: string, selectedUserId: number, token: string): Promise<CreateSessionResponse> {
   const response = await fetch(`${API_BASE_URL}/add-session?agentName=${encodeURIComponent(agentName)}&userId=${selectedUserId}`, {

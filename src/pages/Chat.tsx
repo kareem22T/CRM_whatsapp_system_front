@@ -68,7 +68,7 @@ export default function ChatView() {
   }, [])
 
   const whatsapp = useWhatsAppWebSocket({
-    serverUrl: "http://localhost:3002",
+    serverUrl: "http://67.211.221.109:3002",
     autoConnect: true,
     onMessage: handleMessage,
     onQRCode: handleQRCode,
@@ -515,7 +515,7 @@ export default function ChatView() {
                                           message.isFromMe ? "hover:bg-white/20 text-white" : "hover:bg-gray-200"
                                         }`}
                                         onClick={() =>
-                                          window.open(`http://localhost:3001${message.downloadUrl}`, "_blank")
+                                          window.open(`http://67.211.221.109:3001${message.downloadUrl}`, "_blank")
                                         }
                                       >
                                         <Download className="w-4 h-4" />
@@ -528,7 +528,7 @@ export default function ChatView() {
                                             message.isFromMe ? "hover:bg-white/20 text-white" : "hover:bg-gray-200"
                                           }`}
                                           onClick={() =>
-                                            window.open(`http://localhost:3001${message.viewUrl}`, "_blank")
+                                            window.open(`http://67.211.221.109:3001${message.viewUrl}`, "_blank")
                                           }
                                         >
                                           <Eye className="w-4 h-4" />

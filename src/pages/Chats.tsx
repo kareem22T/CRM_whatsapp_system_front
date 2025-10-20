@@ -51,7 +51,7 @@ export default function ChatsPage() {
 
   // Initialize WebSocket with memoized callbacks
   const whatsapp = useWhatsAppWebSocket({
-    serverUrl: 'http://localhost:3002',
+    serverUrl: 'http://67.211.221.109:3002',
     autoConnect: true, // This will auto-connect
     onMessage: handleMessage,
     onQRCode: handleQRCode,
@@ -114,7 +114,7 @@ export default function ChatsPage() {
     const matchesSearch =
       searchTerm === "" ||
       chat.participantNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      chat.lastMessageText.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      chat.lastMessageText?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
       (chat.groupName && chat.groupName.toLowerCase().includes(searchTerm.toLowerCase()))
 
     const matchesFilter =
@@ -258,7 +258,7 @@ export default function ChatsPage() {
                                     <span className="text-xs text-gray-400">•</span>
                                     <span className="text-xs text-gray-500">{formatDate(chat.lastMessageTime)}</span>
                                     </div>
-                                    <p className="text-sm text-gray-700 line-clamp-2">{chat.lastMessageText === "[PTT]" ? "Media File" : (chat.lastMessageText.length > 60 ? chat.lastMessageText.slice(0, 60) + " ..." : chat.lastMessageText) }</p>
+                                    <p className="text-sm text-gray-700 line-clamp-2">{chat.lastMessageText === "[PTT]" ? "Media File" : (chat.lastMessageText?.length > 60 ? chat.lastMessageText?.slice(0, 60) + " ..." : chat.lastMessageText) }</p>
                                 </div>
     
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">

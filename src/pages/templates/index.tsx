@@ -14,6 +14,10 @@ export interface Template {
   id: number
   name: string
   message: string
+  hasImage?: boolean
+  imageFilename?: string
+  imageMimetype?: string
+  imageSize?: number
   createdAt: string
   updatedAt: string
 }
@@ -40,10 +44,10 @@ export default function TemplatesPage() {
         ...(searchTerm && { search: searchTerm }),
       })
 
-      const response = await fetch(`http://localhost:3001/templates?${params}`, {
+      const response = await fetch(`http://67.211.221.109:3001/templates?${params}`, {
         headers: {
-            Authorization: `Bearer ${token}`,
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
       const data: TemplatesResponse = await response.json()
 
@@ -87,11 +91,11 @@ export default function TemplatesPage() {
 
   const handleDeleteTemplate = async (templateId: number) => {
     try {
-      const response = await fetch(`http://localhost:3001/templates/${templateId}`, {
+      const response = await fetch(`http://67.211.221.109:3001/templates/${templateId}`, {
         method: "DELETE",
         headers: {
-            Authorization: `Bearer ${token}`,
-        }
+          Authorization: `Bearer ${token}`,
+        },
       })
 
       if (response.ok) {

@@ -49,7 +49,7 @@ export default function ProfilePage() {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch("http://localhost:3001/profile", {
+      const response = await fetch("http://67.211.221.109:3001/profile", {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -74,7 +74,7 @@ export default function ProfilePage() {
     setUpdating(true)
 
     try {
-      const response = await fetch("http://localhost:3001/profile", {
+      const response = await fetch("http://67.211.221.109:3001/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -119,7 +119,7 @@ export default function ProfilePage() {
     setUpdating(true)
 
     try {
-      const response = await fetch("http://localhost:3001/change-password", {
+      const response = await fetch("http://67.211.221.109:3001/change-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -4,18 +4,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Edit, Trash2, Loader2, Phone, Mail, Building, User } from "lucide-react"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+import { Edit, Trash2, Loader2, Phone, Mail, Building, User, CheckCircle2, Circle, XCircle, XCircleIcon, Clock } from "lucide-react"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 export interface Contact {
   id: number
@@ -27,6 +17,8 @@ export interface Contact {
   notes?: string
   avatar?: string
   isActive: boolean
+  isChecked?: boolean
+  isWpContact?: boolean
   groups?: Array<{
     id: number
     name: string
@@ -41,9 +33,10 @@ interface ContactTableProps {
   loading: boolean
   onEdit: (contact: Contact) => void
   onDelete: (contactId: number) => void
+  onStartVerification: (contact: Contact) => void
 }
 
-export function ContactTable({ contacts, loading, onEdit, onDelete }: ContactTableProps) {
+export function ContactTable({ contacts, loading, onEdit, onDelete, onStartVerification }: ContactTableProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -81,6 +74,7 @@ export function ContactTable({ contacts, loading, onEdit, onDelete }: ContactTab
             <TableHead>Contact Info</TableHead>
             <TableHead>Company</TableHead>
             <TableHead>Groups</TableHead>
+            <TableHead className="w-12 text-center">WhatsApp</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -138,35 +132,40 @@ export function ContactTable({ contacts, loading, onEdit, onDelete }: ContactTab
                   ))}
                 </div>
               </TableCell>
+              <TableCell className="text-center">
+                {contact.isChecked ? (
+                  contact.isWpContact ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-500 mx-auto" />
+                  ) : (
+                    <XCircleIcon color="red" className="h-4 w-4 text-gray-400 mx-auto"  />
+                  )
+                ) : (
+                  <Clock className="h-4 w-4 text-muted-foreground mx-auto" />
+                )}
+              </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" size="sm" onClick={() => onEdit(contact)}>
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
                       <Button variant="outline" size="sm">
-                        <Trash2 className="h-4 w-4" />
+                        Actions
                       </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Contact</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete {contact.name}? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => onDelete(contact.id)}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => onEdit(contact)}>
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onStartVerification(contact)}>
+                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                        Check WhatsApp
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onDelete(contact.id)} className="text-destructive">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </TableCell>
             </TableRow>

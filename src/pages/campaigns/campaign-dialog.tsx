@@ -17,10 +17,67 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
+import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
 import { Search, X } from "lucide-react"
-import type { Campaign } from "@/types/campaign"
 import { useAppSelector } from "@/app/hooks"
+
+// import type { Campaign } from "@/types/campaign"
+// import { useAppSelector } from "@/app/hooks"
+
+interface Campaign {
+  id: number
+  name: string
+  description: string
+  minIntervalMinutes: number
+  maxIntervalMinutes: number
+  lastSent: string | null
+  createdAt: string
+  updatedAt: string
+  sessionId: number
+  groupId?: number
+  status: "inactive" | "active" | "running" | "paused" | "completed" | "failed"
+  isStarted?: boolean
+  totalContacts: number
+  messagesSent: number
+  messagesFailed: number
+  messagesPending: number
+  progressPercentage: number
+  nextSendAt: string | null
+  startedAt: string | null
+  completedAt: string | null
+  pausedAt: string | null
+  estimatedCompletionAt: string | null
+  isAllDay?: boolean
+  dailyStartTime?: string | null
+  dailyEndTime?: string | null
+  session?: {
+    id: number
+    sessionName: string
+    agentName: string
+    isActive: boolean
+    lastConnected?: string
+    connectionStatus?: string
+  }
+  contactGroup?: {
+    id: number
+    name: string
+    description: string | null
+    color: string | null
+    isActive: boolean
+  }
+  contacts?: Array<{
+    id: number
+    name: string
+    email: string
+    phone: string
+  }>
+  templates?: Array<{
+    id: number
+    name: string
+    message: string
+  }>
+}
 
 interface Session {
   id: number
@@ -75,6 +132,9 @@ export function CampaignDialog({ open, onOpenChange, campaign, onCampaignSaved }
     maxIntervalMinutes: 10,
     groupId: null as number | null,
     templateIds: [] as number[],
+    isAllDay: true,
+    dailyStartTime: null as string | null,
+    dailyEndTime: null as string | null,
   })
 
   const [sessions, setSessions] = useState<Session[]>([])
@@ -129,6 +189,9 @@ export function CampaignDialog({ open, onOpenChange, campaign, onCampaignSaved }
         maxIntervalMinutes: campaign.maxIntervalMinutes,
         groupId: campaign.groupId || null,
         templateIds: campaign.templates?.map((t) => t.id) || [],
+        isAllDay: campaign.isAllDay !== undefined ? campaign.isAllDay : true,
+        dailyStartTime: campaign.dailyStartTime || null,
+        dailyEndTime: campaign.dailyEndTime || null,
       })
     } else {
       setFormData({
@@ -139,13 +202,16 @@ export function CampaignDialog({ open, onOpenChange, campaign, onCampaignSaved }
         maxIntervalMinutes: 10,
         groupId: null,
         templateIds: [],
+        isAllDay: true,
+        dailyStartTime: null,
+        dailyEndTime: null,
       })
     }
   }, [campaign, open])
 
   const fetchSessions = async () => {
     try {
-      const response = await fetch("http://localhost:3001/sessions", {
+      const response = await fetch("http://67.211.221.109:3001/sessions", {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data = await response.json()
@@ -159,7 +225,7 @@ export function CampaignDialog({ open, onOpenChange, campaign, onCampaignSaved }
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch("http://localhost:3001/templates", {
+      const response = await fetch("http://67.211.221.109:3001/templates", {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data = await response.json()
@@ -179,7 +245,7 @@ export function CampaignDialog({ open, onOpenChange, campaign, onCampaignSaved }
         ...(search && { search }),
       })
 
-      const response = await fetch(`http://localhost:3001/contact-groups?${params}`, {
+      const response = await fetch(`http://67.211.221.109:3001/contact-groups?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data: ContactGroupsResponse = await response.json()
@@ -230,8 +296,14 @@ export function CampaignDialog({ open, onOpenChange, campaign, onCampaignSaved }
     setLoading(true)
 
     try {
-      const url = campaign ? `http://localhost:3001/campaigns/${campaign.id}` : "http://localhost:3001/campaigns"
+      const url = campaign ? `http://67.211.221.109:3001/campaigns/${campaign.id}` : "http://67.211.221.109:3001/campaigns"
       const method = campaign ? "PUT" : "POST"
+
+      const formatTimeToHHMMSS = (timeValue: string | null): string | null => {
+        if (!timeValue) return null
+        // If time is in HH:MM format, add :00 for seconds
+        return timeValue.includes(":") && timeValue.split(":").length === 2 ? `${timeValue}:00` : timeValue
+      }
 
       const payload = {
         name: formData.name,
@@ -241,6 +313,9 @@ export function CampaignDialog({ open, onOpenChange, campaign, onCampaignSaved }
         maxIntervalMinutes: formData.maxIntervalMinutes,
         groupId: formData.groupId,
         templateIds: formData.templateIds,
+        isAllDay: formData.isAllDay !== undefined ? formData.isAllDay : true,
+        dailyStartTime: formatTimeToHHMMSS(formData.dailyStartTime),
+        dailyEndTime: formatTimeToHHMMSS(formData.dailyEndTime),
       }
 
       const response = await fetch(url, {
@@ -359,6 +434,61 @@ export function CampaignDialog({ open, onOpenChange, campaign, onCampaignSaved }
                 }
                 required
               />
+            </div>
+          </div>
+
+          <div className="space-y-4 border-t pt-4">
+            <div className="space-y-3">
+              <Label className="text-base font-medium">Campaign Schedule</Label>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="isAllDay"
+                  checked={formData.isAllDay}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      isAllDay: checked,
+                      dailyStartTime: checked ? null : prev.dailyStartTime,
+                      dailyEndTime: checked ? null : prev.dailyEndTime,
+                    }))
+                  }
+                />
+                <Label htmlFor="isAllDay">Run all day</Label>
+              </div>
+
+              {!formData.isAllDay && (
+                <div className="grid grid-cols-2 gap-4 ml-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="dailyStartTime">Daily Start Time</Label>
+                    <Input
+                      id="dailyStartTime"
+                      type="time"
+                      value={formData.dailyStartTime || ""}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          dailyStartTime: e.target.value || null,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dailyEndTime">Daily End Time</Label>
+                    <Input
+                      id="dailyEndTime"
+                      type="time"
+                      value={formData.dailyEndTime || ""}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          dailyEndTime: e.target.value || null,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

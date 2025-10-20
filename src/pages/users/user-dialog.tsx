@@ -64,7 +64,7 @@ export function UserDialog({ open, onOpenChange, user, onUserSaved }: UserDialog
     setLoading(true)
 
     try {
-      const url = user ? `http://localhost:3001/users/${user.id}` : "http://localhost:3001/register"
+      const url = user ? `http://67.211.221.109:3001/users/${user.id}` : "http://67.211.221.109:3001/register"
       const method = user ? "PUT" : "POST"
 
       const payload = user

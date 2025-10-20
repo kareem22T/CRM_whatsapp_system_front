@@ -23,7 +23,7 @@ interface ToastNotification {
 }
 
 export const WhatsAppNotificationComponent: React.FC<NotificationComponentProps> = ({
-  serverUrl = 'http://localhost:3002',
+  serverUrl = 'http://67.211.221.109:3002',
   position = 'top-right',
   maxNotifications = 5,
   autoHideDuration = 5000,

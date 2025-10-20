@@ -14,9 +14,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
 import { useAppSelector } from "@/app/hooks"
 import { toast } from "react-toastify"
+import { RootState } from "@/app/store"
 
 export interface ContactGroup {
   id: number
@@ -54,7 +54,7 @@ export function ContactGroupDialog({ open, onOpenChange, group, onGroupSaved }: 
     color: "#3b82f6",
   })
   const [loading, setLoading] = useState(false)
-    const token = useAppSelector((state) => state.auth.token)
+  const token = useAppSelector((state: RootState) => state.auth.token)
 
   useEffect(() => {
     if (group) {
@@ -77,14 +77,14 @@ export function ContactGroupDialog({ open, onOpenChange, group, onGroupSaved }: 
     setLoading(true)
 
     try {
-      const url = group ? `http://localhost:3001/contact-groups/${group.id}` : "http://localhost:3001/contact-groups"
+      const url = group ? `http://67.211.221.109:3001/contact-groups/${group.id}` : "http://67.211.221.109:3001/contact-groups"
       const method = group ? "PUT" : "POST"
 
       const response = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` // Add when auth is available
+          Authorization: `Bearer ${token}`, // Add when auth is available
         },
         body: JSON.stringify(formData),
       })
@@ -93,12 +93,11 @@ export function ContactGroupDialog({ open, onOpenChange, group, onGroupSaved }: 
         toast.success(group ? "Contact group updated successfully" : "Contact group created successfully")
         onGroupSaved()
       } else {
-        const errorData = await response.json().catch(() => null); // try parsing error
-        toast.error(errorData?.message || "Failed to update contact group");
-        console.log(errorData || response);
-        
+        const errorData = await response.json().catch(() => null) // try parsing error
+        toast.error(errorData?.message || "Failed to update contact group")
+        console.log(errorData || response)
       }
-    } catch (error : any) {        
+    } catch (error: any) {
       toast.error(error.data.message || "An error occurred")
     } finally {
       setLoading(false)

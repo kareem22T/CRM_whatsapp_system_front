@@ -44,7 +44,7 @@ export function ContactDialog({ open, onOpenChange, contact, onContactSaved, ava
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
 
-    const token = useAppSelector((state) => state.auth.token)
+  const token = useAppSelector((state) => state.auth.token)
 
   useEffect(() => {
     if (contact) {
@@ -77,14 +77,14 @@ export function ContactDialog({ open, onOpenChange, contact, onContactSaved, ava
     setLoading(true)
 
     try {
-      const url = contact ? `http://localhost:3001/contacts/${contact.id}` : "http://localhost:3001/contacts"
+      const url = contact ? `http://67.211.221.109:3001/contacts/${contact.id}` : "http://67.211.221.109:3001/contacts"
       const method = contact ? "PUT" : "POST"
 
       const response = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` // Add when auth is available
+          Authorization: `Bearer ${token}`, // Add when auth is available
         },
         body: JSON.stringify(formData),
       })

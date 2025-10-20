@@ -51,7 +51,7 @@ export default function Home() {
 
   // Initialize WebSocket with memoized callbacks
   const whatsapp = useWhatsAppWebSocket({
-    serverUrl: "http://localhost:3002",
+    serverUrl: "http://67.211.221.109:3002",
     autoConnect: true, // This will auto-connect
     onMessage: handleMessage,
     onQRCode: handleQRCode,

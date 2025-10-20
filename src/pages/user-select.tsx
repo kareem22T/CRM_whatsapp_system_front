@@ -31,7 +31,7 @@ export function UserSelect({ value, onValueChange, placeholder = "Select user...
         search: searchTerm,
       })
 
-      const response = await fetch(`http://localhost:3001/users?${params}`, {
+      const response = await fetch(`http://67.211.221.109:3001/users?${params}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }

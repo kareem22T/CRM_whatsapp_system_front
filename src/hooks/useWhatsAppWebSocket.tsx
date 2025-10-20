@@ -52,7 +52,7 @@ interface UseWhatsAppWebSocketReturn {
 
 export const useWhatsAppWebSocket = (config: UseWhatsAppWebSocketConfig = {}): UseWhatsAppWebSocketReturn => {
   const {
-    serverUrl = 'http://localhost:3002',
+    serverUrl = 'http://67.211.221.109:3002',
     autoConnect = true,
     onMessage,
     onMessageStatusUpdate,

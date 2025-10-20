@@ -64,7 +64,7 @@ export default function UsersPage() {
         ...(role && { role })
       })
 
-      const response = await fetch(`http://localhost:3001/users?${params}`, {
+      const response = await fetch(`http://67.211.221.109:3001/users?${params}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -112,7 +112,7 @@ export default function UsersPage() {
 
   const handleDeleteUser = async (userId: number) => {
     try {
-      const response = await fetch(`http://localhost:3001/users/${userId}`, {
+      const response = await fetch(`http://67.211.221.109:3001/users/${userId}`, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${token}`

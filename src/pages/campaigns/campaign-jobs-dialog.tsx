@@ -45,7 +45,7 @@ export function CampaignJobsDialog({ open, onOpenChange, campaign }: CampaignJob
         ...(statusFilter !== "all" && { status: statusFilter }),
       })
 
-      const response = await fetch(`http://localhost:3002/campaign/${campaign.id}/jobs?${params}`, {
+      const response = await fetch(`http://67.211.221.109:3002/campaign/${campaign.id}/jobs?${params}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -76,7 +76,7 @@ export function CampaignJobsDialog({ open, onOpenChange, campaign }: CampaignJob
     if (!campaign) return
 
     try {
-      const response = await fetch(`http://localhost:3002/campaign/${campaign.id}/job-stats`, {
+      const response = await fetch(`http://67.211.221.109:3002/campaign/${campaign.id}/job-stats`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -95,7 +95,7 @@ export function CampaignJobsDialog({ open, onOpenChange, campaign }: CampaignJob
     try {
       setRetryingJobs((prev) => new Set(prev).add(jobId))
 
-      const response = await fetch(`http://localhost:3002/campaign-job/${jobId}/retry`, {
+      const response = await fetch(`http://67.211.221.109:3002/campaign-job/${jobId}/retry`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

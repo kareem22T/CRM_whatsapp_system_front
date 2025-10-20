@@ -36,7 +36,7 @@ export function CampaignProgressDialog({ open, onOpenChange, campaign }: Campaig
 
     try {
       setLoading(true)
-      const response = await fetch(`http://localhost:3002/campaign/${campaign.id}/progress`, {
+      const response = await fetch(`http://67.211.221.109:3002/campaign/${campaign.id}/progress`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

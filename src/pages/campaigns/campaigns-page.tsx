@@ -6,13 +6,12 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CampaignTable } from "./campaign-table"
 import { CampaignDialog } from "./campaign-dialog"
-import { CampaignProgressDialog } from "./campaign-progress-dialog"
-import { CampaignJobsDialog } from "./campaign-jobs-dialog"
-import { Pagination } from "./pagination"
 import { Plus, Search } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { useAppSelector } from "@/app/hooks"
 import type { Campaign } from "@/types/campaign"
+import { useAppSelector } from "@/app/hooks"
+import { CampaignProgressDialog } from "./campaign-progress-dialog"
+import { CampaignJobsDialog } from "./campaign-jobs-dialog"
 
 export interface PaginationInfo {
   currentPage: number
@@ -44,9 +43,9 @@ export default function CampaignsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null)
   const [progressDialogOpen, setProgressDialogOpen] = useState(false)
   const [jobsDialogOpen, setJobsDialogOpen] = useState(false)
-  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null)
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null)
   const { toast } = useToast()
 
@@ -59,7 +58,7 @@ export default function CampaignsPage() {
         ...(searchTerm && { search: searchTerm }),
       })
 
-      const response = await fetch(`http://localhost:3001/campaigns?${params}`, {
+      const response = await fetch(`http://67.211.221.109:3001/campaigns?${params}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -115,9 +114,10 @@ export default function CampaignsPage() {
     setJobsDialogOpen(true)
   }
 
+
   const handleDeleteCampaign = async (campaignId: number) => {
     try {
-      const response = await fetch(`http://localhost:3001/campaigns/${campaignId}`, {
+      const response = await fetch(`http://67.211.221.109:3001/campaigns/${campaignId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -192,13 +192,35 @@ export default function CampaignsPage() {
             loading={loading}
             onEdit={handleEditCampaign}
             onDelete={handleDeleteCampaign}
-            onRefresh={() => fetchCampaigns(pagination.currentPage, pagination.itemsPerPage, search)}
-            onViewProgress={handleViewProgress}
             onViewJobs={handleViewJobs}
+            onViewProgress={handleViewProgress}
+            onRefresh={() => fetchCampaigns(pagination.currentPage, pagination.itemsPerPage, search)}
           />
 
-          {/* Pagination */}
-          <Pagination pagination={pagination} onPageChange={handlePageChange} />
+          {/* Simple Pagination */}
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">
+              Showing {campaigns.length} of {pagination.totalItems} campaigns
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(pagination.currentPage - 1)}
+                disabled={!pagination.hasPreviousPage}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(pagination.currentPage + 1)}
+                disabled={!pagination.hasNextPage}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -219,6 +241,7 @@ export default function CampaignsPage() {
 
       {/* Jobs Dialog */}
       <CampaignJobsDialog open={jobsDialogOpen} onOpenChange={setJobsDialogOpen} campaign={selectedCampaign} />
+
     </div>
   )
 }

@@ -7,8 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Progress } from "@/components/ui/progress"
 import { Edit, Trash2, Play, Pause, Square, RotateCcw, Loader2, Eye, BarChart3 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { Campaign } from "@/types/campaign"
 import { useAppSelector } from "@/app/hooks"
-import type { Campaign } from "@/types/campaign" 
 
 interface CampaignTableProps {
   campaigns: Campaign[]
@@ -39,8 +39,8 @@ export function CampaignTable({
 
       const endpoint =
         action === "start"
-          ? `http://localhost:3002/campaign/${campaignId}/start`
-          : `http://localhost:3002/campaign/${campaignId}/${action}`
+          ? `http://67.211.221.109:3002/campaign/${campaignId}/start`
+          : `http://67.211.221.109:3002/campaign/${campaignId}/${action}`
 
       const response = await fetch(endpoint, {
         method: "POST",

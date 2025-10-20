@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Folder, FolderOpen, Plus, Edit, Trash2, Users, MoreHorizontal } from "lucide-react"
+import { Folder, FolderOpen, Plus, Edit, Trash2, Users, MoreHorizontal, CheckCircle2 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import {
   AlertDialog,
@@ -25,6 +25,7 @@ interface ContactGroupSidebarProps {
   onAddGroup: () => void
   onEditGroup: (group: ContactGroup) => void
   onDeleteGroup: (groupId: number) => void
+  onStartGroupVerification: (group: ContactGroup) => void
   loading: boolean
 }
 
@@ -35,6 +36,7 @@ export function ContactGroupSidebar({
   onAddGroup,
   onEditGroup,
   onDeleteGroup,
+  onStartGroupVerification,
   loading,
 }: ContactGroupSidebarProps) {
   const [deleteGroupId, setDeleteGroupId] = useState<number | null>(null)
@@ -99,6 +101,10 @@ export function ContactGroupSidebar({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => onStartGroupVerification(group)}>
+                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                    Check WhatsApp
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onEditGroup(group)}>
                     <Edit className="h-4 w-4 mr-2" />
                     Edit

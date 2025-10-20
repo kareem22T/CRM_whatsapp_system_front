@@ -2,7 +2,7 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Edit, Trash2, Loader2 } from "lucide-react"
+import { Edit, Trash2, Loader2, ImageIcon } from "lucide-react"
 import type { Template } from "./index"
 import {
   AlertDialog,
@@ -43,6 +43,7 @@ export function TemplateTable({ templates, loading, onEdit, onDelete }: Template
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Message</TableHead>
+            <TableHead className="text-center">Image</TableHead>
             <TableHead>Created</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -52,6 +53,15 @@ export function TemplateTable({ templates, loading, onEdit, onDelete }: Template
             <TableRow key={template.id}>
               <TableCell className="font-medium">{template.name}</TableCell>
               <TableCell className="max-w-xs truncate">{template.message}</TableCell>
+              <TableCell className="text-center">
+                {template.hasImage ? (
+                  <div className="flex items-center justify-center">
+                    <ImageIcon className="h-4 w-4 text-green-600" />
+                  </div>
+                ) : (
+                  <span className="text-xs text-muted-foreground">—</span>
+                )}
+              </TableCell>
               <TableCell>{new Date(template.createdAt).toLocaleDateString()}</TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
